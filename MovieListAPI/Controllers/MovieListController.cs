@@ -34,10 +34,10 @@ namespace MovieListAPI.Controllers
                     { "client", API_CLIENT_NAME },
                     { "x-api-key", _configuration["MovieListAPI:MovieGluApiKey"]},
                     { "authorization", _configuration["MovieListAPI:MovieGluAuth"] },
-                    { "terriroty", "XX" },
+                    { "territory", "XX" },
                     { "api-version", "v200" },
                     { "geolocation", "-22.0;14.0" },
-                    { "device-datetime", DateTime.Now.ToString("s") }
+                    { "device-datetime", DateTime.Now.ToString("s") + ".360Z" }
                 }
             };
 
