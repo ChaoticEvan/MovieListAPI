@@ -7,36 +7,42 @@ namespace MovieListAPI.Controllers
     [Route("[controller]")]
     public class MovieListController : ControllerBase
     {
+        private readonly IConfiguration _configuration;
         private readonly ILogger<MovieListController> _logger;
-
         private IHttpClientFactory _httpClientFactory;
 
-        private const string COUNTRY_CODE = "US";
+        private const string API_URL = "https://api-gate2.movieglu.com/";
+        private const string API_CLIENT_NAME = "NCIN";
 
-        private const string LANGUAGE_CODE = "en";
 
-        public MovieListController(ILogger<MovieListController> logger, IHttpClientFactory httpClientFactory)
+        public MovieListController(ILogger<MovieListController> logger, IHttpClientFactory httpClientFactory, IConfiguration configuration)
         {
             _logger = logger;
             _httpClientFactory = httpClientFactory;
+            _configuration = configuration;
         }
 
         [HttpGet(Name = "GetMovieList")]
         public async Task<IEnumerable<Movie>> Get()
         {
-            var httpRequestMessage = new HttpRequestMessage(
+            var nowShowingMoviesRequest = new HttpRequestMessage(
                 HttpMethod.Get,
-                "https://api.themoviedb.org/3/movie/now_playing?")
+                API_URL + "filmsNowShowing")
             {
                 Headers =
                 {
-                    { HeaderNames.Accept, "application/vnd.github.v3+json" },
-                    { HeaderNames.UserAgent, "HttpRequestsSample" }
+                    { "client", API_CLIENT_NAME },
+                    { "x-api-key", _configuration["MovieListAPI:MovieGluApiKey"]},
+                    { "authorization", _configuration["MovieListAPI:MovieGluAuth"] },
+                    { "terriroty", "XX" },
+                    { "api-version", "v200" },
+                    { "geolocation", "-22.0;14.0" },
+                    { "device-datetime", DateTime.Now.ToString("s") }
                 }
             };
 
             var httpClient = _httpClientFactory.CreateClient();
-            var response = await httpClient.SendAsync(httpRequestMessage);
+            var nowShowingMoviesResponse = await httpClient.SendAsync(nowShowingMoviesRequest);
             return new List<Movie>();
         }
     }
