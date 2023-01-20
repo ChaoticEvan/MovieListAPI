@@ -37,7 +37,7 @@ namespace MovieListAPI.Controllers
 
             var httpClient = _httpClientFactory.CreateClient();
             var response = await httpClient.SendAsync(httpRequestMessage);
-            return null;
+            return new List<Movie>();
         }
     }
 }
