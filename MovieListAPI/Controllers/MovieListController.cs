@@ -49,6 +49,12 @@ namespace MovieListAPI.Controllers
             return movies;
         }
 
+        /// <summary>
+        /// Gets a list of movies now playing.
+        /// 
+        /// Sends request to filmsNowShowing at MovieGlue
+        /// </summary>
+        /// <returns>JSON Response from HTTP Request to filmsNowShowing</returns>
         private async Task<dynamic> GetNowPlaying()
         {
             var nowShowingMoviesRequest = new HttpRequestMessage(
@@ -81,6 +87,13 @@ namespace MovieListAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Gets list of showings for given movie.
+        /// 
+        /// Sends request to filmShowTimes at MovieGlue
+        /// </summary>
+        /// <param name="filmId">Internal MovieGlu ID to get list of showings in their DB</param>
+        /// <returns>JSON Response from HTTP Request to filmShowTimes</returns>
         private async Task<dynamic> GetShowings(int filmId)
         {
             var getTheatersRequest = new HttpRequestMessage(
