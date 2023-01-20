@@ -1,5 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Dynamic;
+using System.Text.Json;
 
 namespace MovieListAPI.Controllers
 {
@@ -13,6 +17,7 @@ namespace MovieListAPI.Controllers
 
         private const string API_URL = "https://api-gate2.movieglu.com/";
         private const string API_CLIENT_NAME = "NCIN";
+        private const string DATE_HEADER_POSTFIX = ".360Z";
 
 
         public MovieListController(ILogger<MovieListController> logger, IHttpClientFactory httpClientFactory, IConfiguration configuration)
@@ -24,6 +29,27 @@ namespace MovieListAPI.Controllers
 
         [HttpGet(Name = "GetMovieList")]
         public async Task<IEnumerable<Movie>> Get()
+        {
+            List<Movie> movies = new List<Movie>();
+            JsonElement nowPlayingContent = await GetNowPlaying();
+
+            foreach (var requestMovie in nowPlayingContent.GetProperty("films").EnumerateArray())
+            {
+                Movie movie = new Movie()
+                {
+                    Id = requestMovie.GetProperty("film_id").GetInt32(),
+                    Title = requestMovie.GetProperty("film_name").ToString(),
+                    TrailerLink = requestMovie.GetProperty("film_trailer").ToString(),
+                    ReleaseDate = DateOnly.Parse(requestMovie.GetProperty("release_dates")[0].GetProperty("release_date").ToString()),
+                    PosterLink = requestMovie.GetProperty("images").GetProperty("poster").GetProperty("1").GetProperty("medium").GetProperty("film_image").ToString()
+                };
+                movies.Add(movie);
+            }
+
+            return movies;
+        }
+
+        private async Task<dynamic> GetNowPlaying()
         {
             var nowShowingMoviesRequest = new HttpRequestMessage(
                 HttpMethod.Get,
@@ -37,13 +63,42 @@ namespace MovieListAPI.Controllers
                     { "territory", "XX" },
                     { "api-version", "v200" },
                     { "geolocation", "-22.0;14.0" },
-                    { "device-datetime", DateTime.Now.ToString("s") + ".360Z" }
+                    { "device-datetime", DateTime.Now.ToString("s") + DATE_HEADER_POSTFIX }
                 }
             };
 
             var httpClient = _httpClientFactory.CreateClient();
             var nowShowingMoviesResponse = await httpClient.SendAsync(nowShowingMoviesRequest);
-            return new List<Movie>();
+
+            if (!nowShowingMoviesResponse.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException("Unsuccessful filmsNowShowing MovieGlu request");
+            }
+
+            using (var stream = await nowShowingMoviesResponse.Content.ReadAsStreamAsync())
+            {
+                return JsonSerializer.Deserialize<dynamic>(stream);
+            }
+        }
+
+        private async Task<dynamic> GetShowings(int filmId)
+        {
+            var getTheatersRequest = new HttpRequestMessage(
+                HttpMethod.Get,
+                API_URL + "filmShowTimes/?film_id=" + filmId.ToString() + "&date=" + DateOnly.FromDateTime(DateTime.Now).ToString())
+            {
+                Headers =
+                {
+                    { "client", API_CLIENT_NAME },
+                    { "x-api-key", _configuration["MovieListAPI:MovieGluApiKey"]},
+                    { "authorization", _configuration["MovieListAPI:MovieGluAuth"] },
+                    { "territory", "XX" },
+                    { "api-version", "v200" },
+                    { "geolocation", "-22.0;14.0" },
+                    { "device-datetime", DateTime.Now.ToString("s") + DATE_HEADER_POSTFIX }
+                }
+            };
+            return null;
         }
     }
 }
