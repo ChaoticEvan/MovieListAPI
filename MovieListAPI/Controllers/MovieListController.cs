@@ -3,6 +3,8 @@ using Microsoft.Net.Http.Headers;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
+using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 
 namespace MovieListAPI.Controllers
@@ -43,6 +45,9 @@ namespace MovieListAPI.Controllers
                     ReleaseDate = DateOnly.Parse(requestMovie.GetProperty("release_dates")[0].GetProperty("release_date").ToString()),
                     PosterLink = requestMovie.GetProperty("images").GetProperty("poster").GetProperty("1").GetProperty("medium").GetProperty("film_image").ToString()
                 };
+
+                JsonElement showingsContent = await GetShowings(movie.Id);
+
                 movies.Add(movie);
             }
 
@@ -52,7 +57,7 @@ namespace MovieListAPI.Controllers
         /// <summary>
         /// Gets a list of movies now playing.
         /// 
-        /// Sends request to filmsNowShowing at MovieGlue
+        /// Sends request to filmsNowShowing at MovieGlue.
         /// </summary>
         /// <returns>JSON Response from HTTP Request to filmsNowShowing</returns>
         private async Task<dynamic> GetNowPlaying()
@@ -73,7 +78,7 @@ namespace MovieListAPI.Controllers
                 }
             };
 
-            var httpClient = _httpClientFactory.CreateClient();
+            var httpClient = CreateClient();
             var nowShowingMoviesResponse = await httpClient.SendAsync(nowShowingMoviesRequest);
 
             if (!nowShowingMoviesResponse.IsSuccessStatusCode)
@@ -90,7 +95,7 @@ namespace MovieListAPI.Controllers
         /// <summary>
         /// Gets list of showings for given movie.
         /// 
-        /// Sends request to filmShowTimes at MovieGlue
+        /// Sends request to filmShowTimes at MovieGlue.
         /// </summary>
         /// <param name="filmId">Internal MovieGlu ID to get list of showings in their DB</param>
         /// <returns>JSON Response from HTTP Request to filmShowTimes</returns>
@@ -98,7 +103,7 @@ namespace MovieListAPI.Controllers
         {
             var getTheatersRequest = new HttpRequestMessage(
                 HttpMethod.Get,
-                API_URL + "filmShowTimes/?film_id=" + filmId.ToString() + "&date=" + DateOnly.FromDateTime(DateTime.Now).ToString())
+                API_URL + "filmShowTimes/?film_id=" + filmId.ToString() + "&date=" + DateOnly.FromDateTime(DateTime.Now).ToString("yyyy-MM-dd"))
             {
                 Headers =
                 {
@@ -111,7 +116,23 @@ namespace MovieListAPI.Controllers
                     { "device-datetime", DateTime.Now.ToString("s") + DATE_HEADER_POSTFIX }
                 }
             };
-            return null;
+
+            var httpClient = CreateClient();
+            var getTheatersResponse = await httpClient.SendAsync(getTheatersRequest);
+
+            if (!getTheatersResponse.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException("Unsuccessful filmShowTimes MovieGlu request");
+            }
+            using (var stream = await getTheatersResponse.Content.ReadAsStreamAsync())
+            {
+                return JsonSerializer.Deserialize<dynamic>(stream);
+            }
+        }
+
+        private HttpClient CreateClient() 
+        { 
+            return _httpClientFactory.CreateClient(); 
         }
     }
 }
