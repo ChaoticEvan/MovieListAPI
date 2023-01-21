@@ -1,11 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Net.Http.Headers;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Dynamic;
-using System.Net.Http;
-using System.Runtime.InteropServices;
-using System.Text.Json;
 
 namespace MovieListAPI.Controllers
 {
