@@ -5,18 +5,24 @@ using System.Text.Json;
 namespace MovieListAPI
 {
     /// <summary>
-    /// Class for handling HTTP Requests
+    /// Class for handling HTTP requests to MovieGlu API
     /// </summary>
-    public class RequestHandler
-    {
+    public class MovieGluRequestHandler
+    {        
         private IHttpClientFactory _httpClientFactory;
         private IConfiguration _configuration;
 
+        // Constants
         private const string API_URL = "https://api-gate2.movieglu.com/";
         private const string API_CLIENT_NAME = "NCIN";
         private const string DATE_HEADER_POSTFIX = ".360Z";
 
-        public RequestHandler(IHttpClientFactory httpClientFactory, IConfiguration configuration)
+        /// <summary>
+        /// Constructs a MovieGluRequestHandler object for handling requests sent to the MovieGlu API
+        /// </summary>
+        /// <param name="httpClientFactory">Factory used to create HTTP client for sending requests</param>
+        /// <param name="configuration">Configuration that contains client secrets</param>
+        public MovieGluRequestHandler(IHttpClientFactory httpClientFactory, IConfiguration configuration)
         {
             _httpClientFactory = httpClientFactory;
             _configuration = configuration;
@@ -92,6 +98,7 @@ namespace MovieListAPI
             {
                 throw new HttpRequestException("Unsuccessful filmShowTimes MovieGlu request");
             }
+
             using (var stream = await getTheatersResponse.Content.ReadAsStreamAsync())
             {
                 return JsonSerializer.Deserialize<dynamic>(stream);
