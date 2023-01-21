@@ -45,6 +45,7 @@ namespace MovieListAPI
         /// <returns>Object representing a movie for my MovieList react application</returns>
         private async Task<Movie> BuildMovie(JsonElement jsonMovie)
         {
+            // TODO: Fix bug with images json. sometimes "1" is an array not an object
             Movie movie = new Movie()
             {
                 Id = jsonMovie.GetProperty("film_id").GetInt32(),
