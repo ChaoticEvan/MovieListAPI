@@ -35,8 +35,14 @@ namespace MovieListAPI
         /// </summary>
         /// <param name="cinemaId">Id of cinema to get</param>
         /// <returns>Cinema specified in Id parameter. Null if cinema is not contained in list</returns>
+        /// <exception cref="KeyNotFoundException">Throws when cinema ID is not contained in this movie's list.</exception>
         public Cinema GetCinema(int cinemaId)
         {
+            if (!Cinemas.ContainsKey(cinemaId))
+            {
+                throw new KeyNotFoundException("That cinema is not showing this movie");
+            }
+
             return Cinemas[cinemaId];
         }
     }
