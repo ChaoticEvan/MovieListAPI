@@ -5,7 +5,7 @@ namespace MovieListAPI
     /// <summary>
     /// Custom object to represent movies in the Movie List API
     /// </summary>
-    public class Movie : ISerializable
+    public class Movie
     {
         /// <summary>
         /// MovieGlu ID of movie
@@ -75,16 +75,6 @@ namespace MovieListAPI
             }
 
             return Cinemas[cinemaId];
-        }
-
-        public void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue("Id", Id);
-            info.AddValue("Title", Title);
-            info.AddValue("ReleaseDate", ReleaseDate);
-            info.AddValue("PosterLink", PosterLink);
-            info.AddValue("TrailerLink", TrailerLink);
-            info.AddValue("Cinemas", Cinemas);
         }
     }
 }
