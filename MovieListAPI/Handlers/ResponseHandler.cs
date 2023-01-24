@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace MovieListAPI
+namespace MovieListAPI.Handlers
 {
     /// <summary>
     /// Creates a response to return to MovieListAPI end-user
@@ -17,9 +17,9 @@ namespace MovieListAPI
         /// </summary>
         /// <param name="httpClientFactory">Factory used to create HTTP client for sending requests</param>
         /// <param name="configuration">Configuration that contains client secrets</param>
-        public ResponseHandler(IHttpClientFactory httpClientFactory, IConfiguration configuration) 
-        { 
-            _movieGlueRequestHandler = new MovieGluRequestHandler(httpClientFactory, configuration);            
+        public ResponseHandler(IHttpClientFactory httpClientFactory, IConfiguration configuration)
+        {
+            _movieGlueRequestHandler = new MovieGluRequestHandler(httpClientFactory, configuration);
         }
 
         /// <summary>

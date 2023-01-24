@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using MovieListAPI.CustomObjects;
+using MovieListAPI.Handlers;
 
 namespace MovieListAPI.Controllers
 {

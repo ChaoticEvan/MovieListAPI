@@ -1,4 +1,4 @@
-using MovieListAPI;
+using MovieListAPI.CustomObjects;
 
 namespace MovieListAPITest
 {

@@ -3,13 +3,13 @@ using System.Net.Http.Headers;
 using System.Runtime.Serialization;
 using System.Text.Json;
 
-namespace MovieListAPI
+namespace MovieListAPI.Handlers
 {
     /// <summary>
     /// Class for handling HTTP requests to MovieGlu API
     /// </summary>
     public class MovieGluRequestHandler
-    {        
+    {
         private IHttpClientFactory _httpClientFactory;
         private IConfiguration _configuration;
 
@@ -108,7 +108,7 @@ namespace MovieListAPI
 
             using (var stream = await getTheatersResponse.Content.ReadAsStreamAsync())
             {
-                return JsonSerializer.Deserialize<dynamic>(stream);                 
+                return JsonSerializer.Deserialize<dynamic>(stream);
             }
         }
 

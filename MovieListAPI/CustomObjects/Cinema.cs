@@ -1,4 +1,4 @@
-﻿namespace MovieListAPI
+﻿namespace MovieListAPI.CustomObjects
 {
     /// <summary>
     /// Custom object to represent cinemas in the Movie List API
@@ -23,7 +23,7 @@
         /// <summary>
         /// Set of start times. Public for JSON Serialization
         /// </summary>
-        public List<string> Times { get; set;  }
+        public List<string> Times { get; set; }
 
         public Cinema()
         {

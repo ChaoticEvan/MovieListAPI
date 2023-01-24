@@ -1,6 +1,6 @@
 using System.Runtime.Serialization;
 
-namespace MovieListAPI
+namespace MovieListAPI.CustomObjects
 {
     /// <summary>
     /// Custom object to represent movies in the Movie List API
@@ -21,7 +21,7 @@ namespace MovieListAPI
         /// Movie title
         /// </summary>
         public string? Title { get; set; }
-        
+
         /// <summary>
         /// Link to a trailer
         /// </summary>
@@ -52,7 +52,7 @@ namespace MovieListAPI
         /// <returns>True if cinema was added, false if cinema is contained in list</returns>
         public bool AddCinema(Cinema cinema)
         {
-            if(Cinemas.ContainsKey(cinema.Id))
+            if (Cinemas.ContainsKey(cinema.Id))
             {
                 return false;
             }
