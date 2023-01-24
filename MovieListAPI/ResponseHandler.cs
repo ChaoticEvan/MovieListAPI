@@ -41,23 +41,50 @@ namespace MovieListAPI
         /// <summary>
         /// Helper method for sending extra request to MovieGlu for getting theater showings for specified movie
         /// </summary>
-        /// <param name="jsonMovie">JsonElement of a movie returned from MovieGlu's filmsNowShowing call. Spec here: https://developer.movieglu.com/v2/api-index/filmsnowshowing/</param>
+        /// <param name="movie">JsonElement of a movie returned from MovieGlu's filmsNowShowing call. Spec here: https://developer.movieglu.com/v2/api-index/filmsnowshowing/</param>
         /// <returns>Object representing a movie for my MovieList react application</returns>
-        private async Task<Movie> BuildMovie(JsonElement jsonMovie)
+        private async Task<Movie> BuildMovie(JsonElement movie)
         {
             // TODO: Fix bug with images json. sometimes "1" is an array not an object
-            Movie movie = new Movie()
+            Movie movieObject = new Movie()
             {
-                Id = jsonMovie.GetProperty("film_id").GetInt32(),
-                Title = jsonMovie.GetProperty("film_name").ToString(),
-                TrailerLink = jsonMovie.GetProperty("film_trailer").ToString(),
-                ReleaseDate = DateOnly.Parse(jsonMovie.GetProperty("release_dates")[0].GetProperty("release_date").ToString()),
-                PosterLink = jsonMovie.GetProperty("images").GetProperty("poster").GetProperty("1").GetProperty("medium").GetProperty("film_image").ToString()
+                Id = movie.GetProperty("film_id").GetInt32(),
+                Title = movie.GetProperty("film_name").ToString(),
+                TrailerLink = movie.GetProperty("film_trailer").ToString(),
+                ReleaseDate = DateOnly.Parse(movie.GetProperty("release_dates")[0].GetProperty("release_date").ToString()),
+                PosterLink = movie.GetProperty("images").GetProperty("poster").GetProperty("1").GetProperty("medium").GetProperty("film_image").ToString()
             };
 
-            JsonElement showingsContent = await _movieGlueRequestHandler.GetShowings(movie.Id);
+            JsonElement showingsContent = await _movieGlueRequestHandler.GetShowings(movieObject.Id);
+            foreach (var cinema in showingsContent.GetProperty("cinemas").EnumerateArray())
+            {
+                movieObject.AddCinema(BuildCinema(cinema));
+            }
 
-            return movie;
+            return movieObject;
+        }
+
+        /// <summary>
+        /// Helper method to build a Cinema C# object from the MovieGlu json response 
+        /// </summary>
+        /// <param name="movie">JsonElement of a cinema returned from MovieGlu's filmShowTimes call. Spec here: https://developer.movieglu.com/v2/api-index/filmShowTimes/</param>
+        /// <returns>Object representing a cinema for my MovieList react application</returns>
+        private Cinema BuildCinema(JsonElement cinema)
+        {
+            Cinema cinemaObject = new Cinema()
+            {
+                Id = cinema.GetProperty("cinema_id").GetInt32(),
+                Name = cinema.GetProperty("cinema_name").ToString(),
+                Distance = float.Parse(cinema.GetProperty("distance").ToString())
+            };
+
+            JsonElement showingsObject = cinema.GetProperty("showings").GetProperty("Standard");
+            foreach (var showtime in showingsObject.GetProperty("times").EnumerateArray())
+            {
+                cinemaObject.AddShowing(showingsObject.GetProperty("film_id").GetInt32(), showtime.GetProperty("start_time").ToString());
+            }
+
+            return cinemaObject;
         }
     }
 }

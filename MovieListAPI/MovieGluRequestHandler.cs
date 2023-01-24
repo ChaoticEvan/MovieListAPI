@@ -15,7 +15,10 @@ namespace MovieListAPI
         // Constants
         private const string API_URL = "https://api-gate2.movieglu.com/";
         private const string API_CLIENT_NAME = "NCIN";
-        private const string DATE_HEADER_POSTFIX = ".360Z";
+        
+        // This is necessary for the timestamp header for MovieGlu.
+        // Not sure why.
+        private const string DATE_HEADER_SUFFIX = ".360Z";
 
         /// <summary>
         /// Constructs a MovieGluRequestHandler object for handling requests sent to the MovieGlu API
@@ -48,7 +51,7 @@ namespace MovieListAPI
                     { "territory", "XX" },
                     { "api-version", "v200" },
                     { "geolocation", "-22.0;14.0" },
-                    { "device-datetime", DateTime.Now.ToString("s") + DATE_HEADER_POSTFIX }
+                    { "device-datetime", DateTime.Now.ToString("s") + DATE_HEADER_SUFFIX }
                 }
             };
 
@@ -87,7 +90,7 @@ namespace MovieListAPI
                     { "territory", "XX" },
                     { "api-version", "v200" },
                     { "geolocation", "-22.0;14.0" },
-                    { "device-datetime", DateTime.Now.ToString("s") + DATE_HEADER_POSTFIX }
+                    { "device-datetime", DateTime.Now.ToString("s") + DATE_HEADER_SUFFIX }
                 }
             };
 
