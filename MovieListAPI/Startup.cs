@@ -13,6 +13,7 @@
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddHttpClient();
+            builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
 
