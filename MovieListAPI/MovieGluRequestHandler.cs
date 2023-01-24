@@ -87,7 +87,7 @@ namespace MovieListAPI
                     { "authorization", _configuration["MovieListAPI:MovieGluAuth"] },
                     { "territory", "XX" },
                     { "api-version", "v200" },
-                    { "geolocation", "-22.0;14.0" },
+                    { "geolocation", "-22.0;14.0" }, // TODO: Covert ZIP to long/lat
                     { "device-datetime", DateTime.Now.ToString("s") + MOVIEGLU_DATE_HEADER_SUFFIX }
                 }
             };
