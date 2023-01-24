@@ -17,7 +17,7 @@ namespace MovieListAPI
         private const string API_URL = "https://api-gate2.movieglu.com/";
         private const string API_CLIENT_NAME = "NCIN";
         private const string MOVIEGLU_DATE_HEADER_SUFFIX = ".360Z";
-        private const string MOVIEGLU_NO_CONTENT_HEADER_MESSAGE = "";
+        private const string MOVIEGLU_NO_CONTENT_HEADER_MESSAGE = "No results for request";
         /// <summary>
         /// Constructs a MovieGluRequestHandler object for handling requests sent to the MovieGlu API
         /// </summary>
@@ -131,10 +131,14 @@ namespace MovieListAPI
         {
             IEnumerable<string>? messageHeaders;
             bool ifReceivedNoContentResponse = getTheatersResponse.StatusCode == System.Net.HttpStatusCode.NoContent;
+            if (!ifReceivedNoContentResponse)
+            {
+                return true;
+            }
 
             bool ifResponseHeadersContainsMessage = getTheatersResponse.Headers.TryGetValues("MG-message", out messageHeaders);
             bool ifNoTheatersAreShowingMovie = false;
-            if (ifResponseHeadersContainsMessage && messageHeaders != null)
+            if (ifResponseHeadersContainsMessage)
             {
                 ifNoTheatersAreShowingMovie = messageHeaders.First().Equals(MOVIEGLU_NO_CONTENT_HEADER_MESSAGE);
             }

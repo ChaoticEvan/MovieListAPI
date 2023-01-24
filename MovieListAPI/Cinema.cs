@@ -21,9 +21,9 @@
         public float Distance { get; set; }
 
         /// <summary>
-        /// Private map of movie ID -> set of start times
+        /// Map of movie ID -> set of start times. Public for JSON Serialization
         /// </summary>
-        private Dictionary<int, HashSet<string>> Times;
+        public Dictionary<int, HashSet<string>> Times;
 
         public Cinema()
         {

@@ -45,7 +45,6 @@ namespace MovieListAPI
         /// <returns>Object representing a movie for my MovieList react application</returns>
         private async Task<Movie> BuildMovie(JsonElement movie)
         {
-            // TODO: Fix bug with images json. sometimes "1" is an array not an object
             Movie movieObject = new Movie()
             {
                 Id = movie.GetProperty("film_id").GetInt32(),
@@ -55,7 +54,16 @@ namespace MovieListAPI
                 PosterLink = movie.GetProperty("images").GetProperty("poster").GetProperty("1").GetProperty("medium").GetProperty("film_image").ToString()
             };
 
-            JsonElement showingsContent = await _movieGlueRequestHandler.GetShowings(movieObject.Id);
+            JsonElement showingsContent = new JsonElement();
+            try
+            {
+                showingsContent = await _movieGlueRequestHandler.GetShowings(movieObject.Id);
+            }
+            catch (NoContentException)
+            {
+                return movieObject;
+            }
+
             foreach (var cinema in showingsContent.GetProperty("cinemas").EnumerateArray())
             {
                 movieObject.AddCinema(BuildCinema(cinema));

@@ -1,9 +1,11 @@
+using System.Runtime.Serialization;
+
 namespace MovieListAPI
 {
     /// <summary>
     /// Custom object to represent movies in the Movie List API
     /// </summary>
-    public class Movie
+    public class Movie : ISerializable
     {
         /// <summary>
         /// MovieGlu ID of movie
@@ -29,7 +31,11 @@ namespace MovieListAPI
         /// Link to a poster
         /// </summary>
         public string? PosterLink { get; set; }
-        private Dictionary<int, Cinema> Cinemas { get; set; }
+
+        /// <summary>
+        /// Map from Cinema ID -> Cinema object. Public for JSON Serialization
+        /// </summary>
+        public Dictionary<int, Cinema> Cinemas { get; set; }
 
         /// <summary>
         /// Constructs a movie object
@@ -69,6 +75,16 @@ namespace MovieListAPI
             }
 
             return Cinemas[cinemaId];
+        }
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("Id", Id);
+            info.AddValue("Title", Title);
+            info.AddValue("ReleaseDate", ReleaseDate);
+            info.AddValue("PosterLink", PosterLink);
+            info.AddValue("TrailerLink", TrailerLink);
+            info.AddValue("Cinemas", Cinemas);
         }
     }
 }
