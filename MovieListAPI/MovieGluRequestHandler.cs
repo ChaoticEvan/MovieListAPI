@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Runtime.Serialization;
 using System.Text.Json;
 
 namespace MovieListAPI
@@ -15,8 +16,8 @@ namespace MovieListAPI
         // Constants
         private const string API_URL = "https://api-gate2.movieglu.com/";
         private const string API_CLIENT_NAME = "NCIN";
-        private const string MOVIEGLUE_DATE_HEADER_SUFFIX = ".360Z";
-
+        private const string MOVIEGLU_DATE_HEADER_SUFFIX = ".360Z";
+        private const string MOVIEGLU_NO_CONTENT_HEADER_MESSAGE = "";
         /// <summary>
         /// Constructs a MovieGluRequestHandler object for handling requests sent to the MovieGlu API
         /// </summary>
@@ -48,7 +49,7 @@ namespace MovieListAPI
                     { "territory", "XX" },
                     { "api-version", "v200" },
                     { "geolocation", "-22.0;14.0" },
-                    { "device-datetime", DateTime.Now.ToString("s") + MOVIEGLUE_DATE_HEADER_SUFFIX }
+                    { "device-datetime", DateTime.Now.ToString("s") + MOVIEGLU_DATE_HEADER_SUFFIX }
                 }
             };
 
@@ -87,7 +88,7 @@ namespace MovieListAPI
                     { "territory", "XX" },
                     { "api-version", "v200" },
                     { "geolocation", "-22.0;14.0" },
-                    { "device-datetime", DateTime.Now.ToString("s") + MOVIEGLUE_DATE_HEADER_SUFFIX }
+                    { "device-datetime", DateTime.Now.ToString("s") + MOVIEGLU_DATE_HEADER_SUFFIX }
                 }
             };
 
@@ -97,6 +98,12 @@ namespace MovieListAPI
             if (!getTheatersResponse.IsSuccessStatusCode)
             {
                 throw new HttpRequestException("Unsuccessful filmShowTimes MovieGlu request");
+            }
+
+            // TODO: Test this
+            if (!AreTheatersShowingThisMovie(getTheatersResponse))
+            {
+                throw new NoContentException("No theaters are showing this movie");
             }
 
             using (var stream = await getTheatersResponse.Content.ReadAsStreamAsync())
@@ -110,9 +117,44 @@ namespace MovieListAPI
         /// </summary>
         /// <param name="httpClientFactory">Factory used to create HTTP Client</param>
         /// <returns>The new created client from the given factory</returns>
-        private static HttpClient CreateClient(IHttpClientFactory httpClientFactory)
+        private HttpClient CreateClient(IHttpClientFactory httpClientFactory)
         {
             return httpClientFactory.CreateClient();
+        }
+
+        /// <summary>
+        /// Helper method to determine if response from MovieGlu was a NoContent and no theaters nearby are showing this movie
+        /// </summary>
+        /// <param name="getTheatersResponse">Response from MovieGlu</param>
+        /// <returns>True if receive a No Content response and the appropriate message from MovieGlu. False otherwise</returns>
+        private bool AreTheatersShowingThisMovie(HttpResponseMessage getTheatersResponse)
+        {
+            IEnumerable<string>? messageHeaders;
+            bool ifReceivedNoContentResponse = getTheatersResponse.StatusCode == System.Net.HttpStatusCode.NoContent;
+
+            bool ifResponseHeadersContainsMessage = getTheatersResponse.Headers.TryGetValues("MG-message", out messageHeaders);
+            bool ifNoTheatersAreShowingMovie = false;
+            if (ifResponseHeadersContainsMessage && messageHeaders != null)
+            {
+                ifNoTheatersAreShowingMovie = messageHeaders.First().Equals(MOVIEGLU_NO_CONTENT_HEADER_MESSAGE);
+            }
+
+            return !(ifReceivedNoContentResponse && ifNoTheatersAreShowingMovie);
+        }
+    }
+
+    /// <summary>
+    /// Custom exception class for receiving a No Content response from MovieGlu
+    /// </summary>
+    [Serializable]
+    internal class NoContentException : Exception
+    {
+        public NoContentException()
+        {
+        }
+
+        public NoContentException(string? message) : base(message)
+        {
         }
     }
 }
