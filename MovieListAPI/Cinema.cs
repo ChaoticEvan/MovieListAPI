@@ -1,10 +1,28 @@
 ﻿namespace MovieListAPI
 {
+    /// <summary>
+    /// Custom object to represent cinemas in the Movie List API
+    /// </summary>
     public class Cinema
     {
+        /// <summary>
+        /// MovieGlu ID of cinema
+        /// </summary>
         public int Id { get; set; }
+
+        /// <summary>
+        /// Cinema name
+        /// </summary>
         public string? Name { get; set; }
+
+        /// <summary>
+        /// Distance of Cinema to latitude and longitude coordinates
+        /// </summary>
         public float Distance { get; set; }
+
+        /// <summary>
+        /// Private map of movie ID -> set of start times
+        /// </summary>
         private Dictionary<int, HashSet<string>> Times;
 
         public Cinema()
@@ -20,22 +38,20 @@
         /// <returns>True if showing was added. False otherwise</returns>
         public bool AddShowing(int filmId, string startTime)
         {
-            // If the movie is contained in our showings & the time is in our list then return false
             bool ifContainsMovie = Times.ContainsKey(filmId);            
-            if (ifContainsMovie)
+            if (!ifContainsMovie)
             {
-                bool ifContainsShowingTime = Times[filmId] != null && Times[filmId].Contains(startTime);
-                return !ifContainsShowingTime;
+                Times.Add(filmId, new HashSet<string>() { startTime });
+                return true;
             }
 
-            if (ifContainsMovie)
+            bool ifContainsShowingTime = Times[filmId].Contains(startTime);
+            if(ifContainsShowingTime)
             {
-                Times[filmId].Add(startTime);
+                return false;
             }
-            else
-            {
-                Times[filmId] = new HashSet<string> { startTime };
-            }
+
+            Times[filmId].Add(startTime);
             return true;
 
         }

@@ -1,14 +1,39 @@
 namespace MovieListAPI
 {
+    /// <summary>
+    /// Custom object to represent movies in the Movie List API
+    /// </summary>
     public class Movie
     {
+        /// <summary>
+        /// MovieGlu ID of movie
+        /// </summary>
         public int Id { get; set; }
+
+        /// <summary>
+        /// First release date given for the movie
+        /// </summary>
         public DateOnly ReleaseDate { get; set; }
+
+        /// <summary>
+        /// Movie title
+        /// </summary>
         public string? Title { get; set; }
+        
+        /// <summary>
+        /// Link to a trailer
+        /// </summary>
         public string? TrailerLink { get; set; }
+
+        /// <summary>
+        /// Link to a poster
+        /// </summary>
         public string? PosterLink { get; set; }
         private Dictionary<int, Cinema> Cinemas { get; set; }
 
+        /// <summary>
+        /// Constructs a movie object
+        /// </summary>
         public Movie()
         {
             Cinemas = new Dictionary<int, Cinema>();
