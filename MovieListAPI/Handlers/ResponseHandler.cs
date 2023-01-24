@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using MovieListAPI.CustomObjects;
+using System.Text.Json;
 
 namespace MovieListAPI.Handlers
 {
