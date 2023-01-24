@@ -15,10 +15,7 @@ namespace MovieListAPI
         // Constants
         private const string API_URL = "https://api-gate2.movieglu.com/";
         private const string API_CLIENT_NAME = "NCIN";
-        
-        // This is necessary for the timestamp header for MovieGlu.
-        // Not sure why.
-        private const string DATE_HEADER_SUFFIX = ".360Z";
+        private const string MOVIEGLUE_DATE_HEADER_SUFFIX = ".360Z";
 
         /// <summary>
         /// Constructs a MovieGluRequestHandler object for handling requests sent to the MovieGlu API
@@ -51,7 +48,7 @@ namespace MovieListAPI
                     { "territory", "XX" },
                     { "api-version", "v200" },
                     { "geolocation", "-22.0;14.0" },
-                    { "device-datetime", DateTime.Now.ToString("s") + DATE_HEADER_SUFFIX }
+                    { "device-datetime", DateTime.Now.ToString("s") + MOVIEGLUE_DATE_HEADER_SUFFIX }
                 }
             };
 
@@ -90,7 +87,7 @@ namespace MovieListAPI
                     { "territory", "XX" },
                     { "api-version", "v200" },
                     { "geolocation", "-22.0;14.0" },
-                    { "device-datetime", DateTime.Now.ToString("s") + DATE_HEADER_SUFFIX }
+                    { "device-datetime", DateTime.Now.ToString("s") + MOVIEGLUE_DATE_HEADER_SUFFIX }
                 }
             };
 
@@ -104,7 +101,7 @@ namespace MovieListAPI
 
             using (var stream = await getTheatersResponse.Content.ReadAsStreamAsync())
             {
-                return JsonSerializer.Deserialize<dynamic>(stream);
+                return JsonSerializer.Deserialize<dynamic>(stream);                 
             }
         }
 
