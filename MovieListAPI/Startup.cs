@@ -15,10 +15,16 @@ namespace MovieListAPI
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
             { 
-                c.SwaggerDoc("v3", new OpenApiInfo
+                c.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Title = "GTrackAPI",
-                    Version = "v3"
+                    Title = "MovieListAPI",
+                    Version = "v1",
+                    Description = "API Used for Movie List React app",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Evan Voordeckers",
+                        Email= "evan.voordeckers@gmail.com"
+                    }
                 });
             });
             builder.Services.AddHttpClient();
