@@ -23,7 +23,8 @@ namespace MovieListAPI
                     Contact = new OpenApiContact
                     {
                         Name = "Evan Voordeckers",
-                        Email= "evan.voordeckers@gmail.com"
+                        Email= "evan.voordeckers@gmail.com",
+                        Url = new Uri("https://github.com/ChaoticEvan")
                     }
                 });
             });
