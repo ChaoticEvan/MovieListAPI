@@ -90,7 +90,7 @@ namespace MovieListAPI.Handlers
             JsonElement showingsObject = cinema.GetProperty("showings").GetProperty("Standard");
             foreach (var showtime in showingsObject.GetProperty("times").EnumerateArray())
             {
-                cinemaObject.Times.Add(showtime.GetProperty("start_time").ToString());
+                cinemaObject.StartTimes.Add(showtime.GetProperty("start_time").ToString());
             }
 
             return cinemaObject;

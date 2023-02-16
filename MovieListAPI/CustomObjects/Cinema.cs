@@ -23,11 +23,11 @@
         /// <summary>
         /// Set of start times. Public for JSON Serialization
         /// </summary>
-        public List<string> Times { get; set; }
+        public List<string> StartTimes { get; set; }
 
         public Cinema()
         {
-            Times = new List<string>();
+            StartTimes = new List<string>();
         }
     }
 }
